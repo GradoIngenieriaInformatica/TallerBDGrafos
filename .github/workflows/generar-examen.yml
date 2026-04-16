@@ -1,0 +1,33 @@
+name: Generador de Exámenes (Issues)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - run: pip install requests
+
+      - name: Ejecutar generador
+        run: python generar_examen.py
+        env:
+          ORG_PAT: ${{ secrets.ORG_PAT_CL }}
+          BANK_PAT: ${{ secrets.BANK_PAT }}
+          QUESTION_BANK_CONFIG: ${{ secrets.QUESTION_BANK_CONFIG }}
+          CONFIG_JSON: ${{ secrets.CONFIG_JSON }}
+          ALUMNOS_CSV: ${{ secrets.ALUMNOS_CSV }}
+          TEMPLATE_REPO: ${{ secrets.TEMPLATE_REPO }}
+
+      - name: Subir artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: examenes-generados
+          path: examenes_generados.json
