@@ -190,6 +190,16 @@ def generar_doc_unico(asignaciones):
                 "\n"
             )
 
+        p_nombre = doc.add_paragraph()
+
+        run = p_nombre.add_run(f"Alumno: {alumno}\n")
+        run.bold = True
+        run.font.size = Pt(12)
+
+        firma = p_nombre.add_run(
+            "\nFirma: _______________________________\n"
+        )   
+
         # =====================================
         # PÁGINA BLANCA PARA IMPRESIÓN DÚPLEX
         # =====================================
