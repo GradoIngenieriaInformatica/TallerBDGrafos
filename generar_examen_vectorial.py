@@ -75,8 +75,12 @@ def parsear_alumnos():
 
         parts = [p.strip() for p in line.split(delimiter)]
 
-        if len(parts) >= 4:
-            alumnos.append(parts[3])
+        # columna 0 = nombre
+        if len(parts) >= 1:
+
+            nombre = parts[0]
+
+            alumnos.append(nombre)
 
     print(f"👨‍🎓 TOTAL alumnos: {len(alumnos)}")
 
@@ -138,14 +142,9 @@ def generar_doc_unico(asignaciones):
     for idx, (alumno, preguntas) in enumerate(asignaciones):
 
         # ==========================
-        # SALTO DE PÁGINA ENTRE ALUMNOS
-        # ==========================
-        if idx > 0:
-            doc.add_page_break()
-
-        # ==========================
         # TÍTULO
         # ==========================
+
         doc.add_heading(
             "EXAMEN — BASES DE DATOS VECTORIALES",
             level=1
@@ -154,39 +153,52 @@ def generar_doc_unico(asignaciones):
         # ==========================
         # ALUMNO + FIRMA
         # ==========================
+
         p_nombre = doc.add_paragraph()
+
         run = p_nombre.add_run(f"Alumno: {alumno}\n")
         run.bold = True
         run.font.size = Pt(12)
 
-        p_nombre.add_run("\nFirma: _______________________________\n")
+        firma = p_nombre.add_run(
+            "\nFirma: _______________________________\n"
+        )
 
-        doc.add_paragraph("\n")
+        firma.font.size = Pt(11)
+
+        doc.add_paragraph("")
 
         # ==========================
         # PREGUNTAS
         # ==========================
+
         for i, p in enumerate(preguntas):
 
             texto = formatear_enunciado(p, i + 1)
 
-            para = doc.add_paragraph(texto)
-            para.style.font.size = Pt(11)
+            para = doc.add_paragraph()
+
+            run = para.add_run(texto)
+            run.font.size = Pt(11)
 
             doc.add_paragraph(
                 "\nRespuesta:\n"
                 "______________________________________________\n"
                 "______________________________________________\n"
-                "______________________________________________\n"
-                "______________________________________________\n"
-                "______________________________________________\n"
                 "\n"
             )
+
+        # =====================================
+        # PÁGINA BLANCA PARA IMPRESIÓN DÚPLEX
+        # =====================================
+
+        doc.add_page_break()
+        doc.add_page_break()
 
     doc.save("examenes_vectoriales.docx")
 
     print("✅ DOC FINAL GENERADO: examenes_vectoriales.docx")
-
+    
 # =========================================================
 # MAIN
 # =========================================================
