@@ -89,7 +89,10 @@ def parsear_alumnos():
 def seleccionar_preguntas(preguntas):
 
     faciles = [p for p in preguntas if p["nivel"] == "facil"]
-    medias = [p for p in preguntas if p["nivel"] == "intermedia"]
+    medias = [
+        p for p in preguntas
+        if p["nivel"].lower() in ["medio", "media", "intermedia"]
+    ]
     dificiles = [p for p in preguntas if p["nivel"] == "dificil"]
 
     if len(faciles) < 3 or len(medias) < 3 or len(dificiles) < 2:
