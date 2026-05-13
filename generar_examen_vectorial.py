@@ -193,12 +193,12 @@ def generar_doc_unico(asignaciones):
         # =====================================
 
         doc.add_page_break()
-        doc.add_page_break()
+        # doc.add_page_break()
 
     doc.save("examenes_vectoriales.docx")
 
     print("✅ DOC FINAL GENERADO: examenes_vectoriales.docx")
-    
+
 # =========================================================
 # MAIN
 # =========================================================
