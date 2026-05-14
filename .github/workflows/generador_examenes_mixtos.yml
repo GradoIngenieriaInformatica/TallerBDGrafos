@@ -1,0 +1,44 @@
+name: Generador Exámenes Mixtos Presenciales
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Instalar dependencias
+        run: |
+          pip install requests python-docx
+
+      - name: Ejecutar generador mixto
+        run: python generar_examen_mixto.py
+        env:
+          ORG_PAT: ${{ secrets.ORG_PAT_CL }}
+
+          BANK_PAT: ${{ secrets.BANK_PAT }}
+
+          QUESTION_BANK_GRAFOS: ${{ secrets.QUESTION_BANK_CONFIG }}
+
+          QUESTION_BANK_VECTORIAL: ${{ secrets.QUESTION_BANK_VECTORIAL }}
+
+          CONFIG_JSON_MIXTO: ${{ secrets.CONFIG_JSON_MIXTO }}
+
+          ALUMNOS_CSV: ${{ secrets.ALUMNOS_CSV }}
+
+      - name: Subir artefactos
+        uses: actions/upload-artifact@v4
+        with:
+          name: examenes-mixtos-presenciales
+          path: |
+            examen_mixto.docx
+            respuestas_mixto.docx
+            examenes_mixtos_generados.json
