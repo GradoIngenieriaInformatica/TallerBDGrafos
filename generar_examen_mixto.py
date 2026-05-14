@@ -232,12 +232,23 @@ def generar_doc_examen(examenes):
 
             run.font.size = Pt(11)
 
-            # ============================
-            # ESPACIO RESPUESTA
-            # ============================
+            # =================================================
+            # ESPACIO SEGÚN DIFICULTAD
+            # =================================================
 
-            for _ in range(10):
-                doc.add_paragraph("__________________________________________________")
+            nivel = pregunta["nivel"].lower()
+
+            if nivel == "facil":
+                espacio = 2
+
+            elif nivel in ["medio", "intermedia"]:
+                espacio = 4
+
+            else:
+                espacio = 6
+
+            for _ in range(espacio):
+                doc.add_paragraph("")
 
             doc.add_paragraph("")
 
@@ -264,14 +275,19 @@ def generar_doc_examen(examenes):
         # CARILLA LIBRE
         # =================================================
 
-        doc.add_page_break()
+        doc.add_page_break()       
 
-        doc.add_paragraph(
-            "HOJA ADICIONAL PARA RESPUESTAS"
+        for _ in range(28):
+            doc.add_paragraph("")
+
+        p_extra = doc.add_paragraph()
+
+        r_extra = p_extra.add_run(
+            "Firma del estudiante:\n\n"
+            "____________________________"
         )
 
-        for _ in range(40):
-            doc.add_paragraph("")
+        r_extra.bold = True
 
         # =================================================
         # SIGUIENTE ALUMNO
@@ -282,71 +298,6 @@ def generar_doc_examen(examenes):
     doc.save("examen_mixto.docx")
 
     print("✅ examen_mixto.docx generado")
-
-# =========================================================
-# DOC RESPUESTAS
-# =========================================================
-
-def generar_doc_respuestas():
-
-    doc = Document()
-
-    doc.add_heading(
-        "RESPUESTAS OFICIALES",
-        level=1
-    )
-
-    usadas = sorted(
-        PREGUNTAS_USADAS.values(),
-        key=lambda x: (
-            x["banco"],
-            x["id"]
-        )
-    )
-
-    for p in usadas:
-
-        doc.add_heading(
-            f"Pregunta ID {p['id']}",
-            level=2
-        )
-
-        doc.add_paragraph(
-            f"Banco: {p['banco']}"
-        )
-
-        doc.add_paragraph(
-            f"Dificultad: {p['nivel']}"
-        )
-
-        doc.add_paragraph(
-            f"Puntaje: {p['puntaje']}"
-        )
-
-        doc.add_paragraph(
-            f"Enunciado:\n{p['enunciado']}"
-        )
-
-        criterios = (
-            p.get("respuesta", {})
-            .get("criterios", [])
-        )
-
-        doc.add_paragraph(
-            "Criterios esperados:"
-        )
-
-        for c in criterios:
-
-            doc.add_paragraph(
-                f"- {c}"
-            )
-
-        doc.add_page_break()
-
-    doc.save("respuestas_mixto.docx")
-
-    print("✅ respuestas_mixto.docx generado")
 
 # =========================================================
 # MAIN
@@ -404,8 +355,6 @@ def main():
         )
 
     generar_doc_examen(examenes)
-
-    generar_doc_respuestas()
 
     print("🎉 FIN")
 
