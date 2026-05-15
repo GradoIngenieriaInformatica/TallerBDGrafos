@@ -172,49 +172,61 @@ def rubrica_resumida(pregunta):
 # DOC EXAMEN
 # =========================================================
 
-def generar_doc_examen(examenes):
+# =========================================================
+# GENERAR DOCX EXÁMENES
+# =========================================================
+
+def generar_doc_examenes(asignaciones):
 
     doc = Document()
 
-    for numero, preguntas in enumerate(examenes):
+    for examen_idx, preguntas in enumerate(asignaciones):
 
-        # =================================================
-        # CABECERA
-        # =================================================
+        # =====================================================
+        # NUEVO EXAMEN
+        # =====================================================
 
-        doc.add_heading(
+        if examen_idx > 0:
+            doc.add_page_break()
+
+        # =====================================================
+        # TÍTULO
+        # =====================================================
+
+        titulo = doc.add_heading(
             "EXAMEN PRESENCIAL",
             level=1
         )
 
+        titulo.runs[0].bold = True
+
+        subtitulo = doc.add_paragraph(
+            "Bases de Datos — Grafos y Vectoriales"
+        )
+
+        subtitulo.runs[0].font.size = Pt(11)
+
+        # =====================================================
+        # DATOS ESTUDIANTE
+        # =====================================================
+
         p = doc.add_paragraph()
 
         r = p.add_run(
-            "Nombre: ________________________________\n\n"
+            "\nNombre del estudiante:\n\n"
+            "________________________________________\n\n"
+            "Firma:\n\n"
+            "________________________________________\n"
         )
 
         r.bold = True
+        r.font.size = Pt(11)
 
-        r2 = p.add_run(
-            "Firma: _________________________________"
-        )
-
-        r2.bold = True
-
-        doc.add_paragraph("")
-
-        total = 0
-
-        # =================================================
+        # =====================================================
         # PREGUNTAS
-        # =================================================
+        # =====================================================
 
-        for i, pregunta in enumerate(
-            preguntas,
-            start=1
-        ):
-
-            total += pregunta["puntaje"]
+        for i, pregunta in enumerate(preguntas, start=1):
 
             texto = (
                 f"{i}. "
@@ -224,78 +236,53 @@ def generar_doc_examen(examenes):
                 f"(ID: {pregunta['id']})"
             )
 
-            p = doc.add_paragraph()
+            para = doc.add_paragraph()
 
-            run = p.add_run(texto)
+            run = para.add_run(texto)
 
             run.font.size = Pt(11)
 
             # =================================================
-            # ESPACIO SEGÚN DIFICULTAD
+            # ESPACIO RESPUESTA SEGÚN DIFICULTAD
             # =================================================
 
             nivel = pregunta["nivel"].lower()
 
             if nivel == "facil":
-                espacio = 2
-
-            elif nivel in ["medio", "intermedia"]:
                 espacio = 4
 
-            else:
+            elif nivel in ["medio", "intermedia"]:
                 espacio = 6
+
+            else:
+                espacio = 8
 
             for _ in range(espacio):
                 doc.add_paragraph("")
 
-            doc.add_paragraph("")
-
-        # =================================================
-        # FIRMA FINAL
-        # =================================================
-
-        doc.add_paragraph("")
-
-        p2 = doc.add_paragraph()
-
-        rf = p2.add_run(
-            "Firma final del estudiante:\n\n"
-            "____________________________________"
-        )
-
-        rf.bold = True
-
-        doc.add_paragraph(
-            f"\nPuntaje total del examen: {total}"
-        )
-
-        # =================================================
-        # CARILLA LIBRE
-        # =================================================
-
-        doc.add_page_break()       
-
-        for _ in range(28):
-            doc.add_paragraph("")
-
-        p_extra = doc.add_paragraph()
-
-        r_extra = p_extra.add_run(
-            "Firma del estudiante:\n\n"
-            "____________________________"
-        )
-
-        r_extra.bold = True
-
-        # =================================================
-        # SIGUIENTE ALUMNO
-        # =================================================
+        # =====================================================
+        # HOJA ADICIONAL
+        # =====================================================
 
         doc.add_page_break()
 
-    doc.save("examen_mixto.docx")
+        extra = doc.add_heading(
+            "HOJA ADICIONAL PARA RESPUESTAS",
+            level=1
+        )
 
-    print("✅ examen_mixto.docx generado")
+        extra.runs[0].bold = True
+
+        for _ in range(32):
+            doc.add_paragraph("")
+
+    # =========================================================
+    # GUARDAR
+    # =========================================================
+
+    doc.save("examenes_presenciales.docx")
+
+    print("✅ DOCX generado: examenes_presenciales.docx")
 
 # =========================================================
 # MAIN
