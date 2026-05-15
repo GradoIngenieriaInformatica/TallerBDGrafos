@@ -178,8 +178,6 @@ def rubrica_resumida(pregunta):
 
 from docx.enum.section import WD_SECTION_START
 
-from docx.enum.section import WD_SECTION_START
-
 def generar_doc_examenes(asignaciones):
 
     doc = Document()
@@ -256,25 +254,16 @@ def generar_doc_examenes(asignaciones):
             nivel = pregunta["nivel"].lower()
 
             if nivel == "facil":
-                espacio = 7
+                espacio = 8
 
             elif nivel in ["medio", "intermedia"]:
-                espacio = 9
+                espacio = 11
 
             else:
-                espacio = 11
+                espacio = 14
 
             for _ in range(espacio):
                 doc.add_paragraph("")
-
-        # =====================================================
-        # SEXTA CARILLA LIBRE
-        # =====================================================
-
-        doc.add_page_break()
-
-        for _ in range(34):
-            doc.add_paragraph("")
 
     # =========================================================
     # GUARDAR
