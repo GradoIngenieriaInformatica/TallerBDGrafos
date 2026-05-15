@@ -178,6 +178,8 @@ def rubrica_resumida(pregunta):
 
 from docx.enum.section import WD_SECTION_START
 
+from docx.enum.section import WD_SECTION_START
+
 def generar_doc_examenes(asignaciones):
 
     doc = Document()
@@ -185,7 +187,7 @@ def generar_doc_examenes(asignaciones):
     for examen_idx, preguntas in enumerate(asignaciones):
 
         # =====================================================
-        # NUEVA SECCIÓN (NO PAGE BREAK)
+        # NUEVO EXAMEN
         # =====================================================
 
         if examen_idx > 0:
@@ -266,28 +268,12 @@ def generar_doc_examenes(asignaciones):
                 doc.add_paragraph("")
 
         # =====================================================
-        # AJUSTE MANUAL PARA LLEGAR A 5 PÁGINAS
-        # =====================================================
-
-        for _ in range(18):
-            doc.add_paragraph("")
-
-        # =====================================================
-        # SEXTA CARILLA = HOJA ADICIONAL
+        # SEXTA CARILLA LIBRE
         # =====================================================
 
         doc.add_page_break()
 
-        extra = doc.add_paragraph()
-
-        r = extra.add_run(
-            "HOJA ADICIONAL\n"
-        )
-
-        r.bold = True
-        r.font.size = Pt(12)
-
-        for _ in range(36):
+        for _ in range(34):
             doc.add_paragraph("")
 
     # =========================================================
@@ -299,7 +285,7 @@ def generar_doc_examenes(asignaciones):
     print(
         "✅ DOCX generado: examenes_presenciales.docx"
     )
-
+    
 # =========================================================
 # MAIN
 # =========================================================
