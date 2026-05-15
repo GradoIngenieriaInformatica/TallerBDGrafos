@@ -177,15 +177,10 @@ def rubrica_resumida(pregunta):
 # =========================================================
 
 from docx.shared import Pt
-from docx.enum.text import WD_LINE_SPACING
 
 def generar_doc_examenes(asignaciones):
 
     doc = Document()
-
-    # =====================================================
-    # ESTILO GENERAL
-    # =====================================================
 
     style = doc.styles["Normal"]
 
@@ -248,40 +243,31 @@ def generar_doc_examenes(asignaciones):
 
             para = doc.add_paragraph()
 
-            formato = para.paragraph_format
+            run = para.add_run(texto)
+
+            run.font.size = Pt(11)
+            run.bold = False
 
             # =================================================
-            # DISTRIBUCIÓN VERTICAL REAL
+            # ESPACIO MANUSCRITO REAL
             # =================================================
 
             nivel = pregunta["nivel"].lower()
 
             if nivel == "facil":
 
-                formato.space_after = Pt(90)
+                espacio = 10
 
             elif nivel in ["medio", "intermedia"]:
 
-                formato.space_after = Pt(140)
+                espacio = 15
 
             else:
 
-                formato.space_after = Pt(190)
+                espacio = 20
 
-            formato.line_spacing_rule = (
-                WD_LINE_SPACING.SINGLE
-            )
-
-            run = para.add_run(texto)
-
-            run.font.size = Pt(11)
-
-        # =====================================================
-        # AJUSTE FINAL PARA 6 CARILLAS
-        # =====================================================
-
-        for _ in range(8):
-            doc.add_paragraph("")
+            for _ in range(espacio):
+                doc.add_paragraph("")
 
     # =========================================================
     # GUARDAR
