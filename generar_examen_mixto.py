@@ -249,13 +249,13 @@ def generar_doc_examenes(asignaciones):
             nivel = pregunta["nivel"].lower()
 
             if nivel == "facil":
-                espacio = 4
-
-            elif nivel in ["medio", "intermedia"]:
                 espacio = 6
 
-            else:
+            elif nivel in ["medio", "intermedia"]:
                 espacio = 8
+
+            else:
+                espacio = 10
 
             for _ in range(espacio):
                 doc.add_paragraph("")
@@ -265,11 +265,7 @@ def generar_doc_examenes(asignaciones):
         # =====================================================
 
         doc.add_page_break()
-
-        extra = doc.add_heading(
-            "HOJA ADICIONAL PARA RESPUESTAS",
-            level=1
-        )
+        
 
         extra.runs[0].bold = True
 
