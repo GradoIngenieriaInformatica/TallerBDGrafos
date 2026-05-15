@@ -339,7 +339,7 @@ def main():
             preguntas_finales
         )
 
-    generar_doc_examen(examenes)
+    generar_doc_examenes(examenes)
 
     print("🎉 FIN")
 
