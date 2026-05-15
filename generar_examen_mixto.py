@@ -176,11 +176,21 @@ def rubrica_resumida(pregunta):
 # GENERAR DOCX EXÁMENES
 # =========================================================
 
-from docx.enum.section import WD_SECTION_START
+from docx.shared import Pt
+from docx.enum.text import WD_LINE_SPACING
 
 def generar_doc_examenes(asignaciones):
 
     doc = Document()
+
+    # =====================================================
+    # ESTILO GENERAL
+    # =====================================================
+
+    style = doc.styles["Normal"]
+
+    style.font.name = "Arial"
+    style.font.size = Pt(11)
 
     for examen_idx, preguntas in enumerate(asignaciones):
 
@@ -189,10 +199,7 @@ def generar_doc_examenes(asignaciones):
         # =====================================================
 
         if examen_idx > 0:
-
-            doc.add_section(
-                WD_SECTION_START.NEW_PAGE
-            )
+            doc.add_page_break()
 
         # =====================================================
         # TÍTULO
@@ -208,8 +215,6 @@ def generar_doc_examenes(asignaciones):
         subtitulo = doc.add_paragraph(
             "Bases de Datos — Grafos y Vectoriales"
         )
-
-        subtitulo.runs[0].font.size = Pt(11)
 
         # =====================================================
         # DATOS ESTUDIANTE
@@ -243,27 +248,40 @@ def generar_doc_examenes(asignaciones):
 
             para = doc.add_paragraph()
 
-            run = para.add_run(texto)
-
-            run.font.size = Pt(11)
+            formato = para.paragraph_format
 
             # =================================================
-            # ESPACIO SEGÚN DIFICULTAD
+            # DISTRIBUCIÓN VERTICAL REAL
             # =================================================
 
             nivel = pregunta["nivel"].lower()
 
             if nivel == "facil":
-                espacio = 8
+
+                formato.space_after = Pt(90)
 
             elif nivel in ["medio", "intermedia"]:
-                espacio = 11
+
+                formato.space_after = Pt(140)
 
             else:
-                espacio = 14
 
-            for _ in range(espacio):
-                doc.add_paragraph("")
+                formato.space_after = Pt(190)
+
+            formato.line_spacing_rule = (
+                WD_LINE_SPACING.SINGLE
+            )
+
+            run = para.add_run(texto)
+
+            run.font.size = Pt(11)
+
+        # =====================================================
+        # AJUSTE FINAL PARA 6 CARILLAS
+        # =====================================================
+
+        for _ in range(8):
+            doc.add_paragraph("")
 
     # =========================================================
     # GUARDAR
@@ -274,7 +292,7 @@ def generar_doc_examenes(asignaciones):
     print(
         "✅ DOCX generado: examenes_presenciales.docx"
     )
-    
+
 # =========================================================
 # MAIN
 # =========================================================
