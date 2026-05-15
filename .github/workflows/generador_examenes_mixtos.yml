@@ -37,8 +37,6 @@ jobs:
       - name: Subir artefactos
         uses: actions/upload-artifact@v4
         with:
-          name: examenes-mixtos-presenciales
+          name: examenes_presenciales
           path: |
-            examen_mixto.docx
-            respuestas_mixto.docx
-            examenes_mixtos_generados.json
+            examenes_presenciales.docx
