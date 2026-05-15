@@ -255,7 +255,7 @@ def generar_doc_examenes(asignaciones):
                 espacio = 8
 
             else:
-                espacio = 10
+                espacio = 8
 
             for _ in range(espacio):
                 doc.add_paragraph("")
@@ -265,9 +265,6 @@ def generar_doc_examenes(asignaciones):
         # =====================================================
 
         doc.add_page_break()     
-
-        for _ in range(32):
-            doc.add_paragraph("")
 
     # =========================================================
     # GUARDAR
