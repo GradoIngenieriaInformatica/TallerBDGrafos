@@ -218,12 +218,10 @@ def generar_doc_examen(examenes):
 
             texto = (
                 f"{i}. "
-                f"{pregunta['enunciado']}\n\n"
-                f"ID: {pregunta['id']}\n"
-                f"Banco: {pregunta['banco']}\n"
-                f"Dificultad: {pregunta['nivel']}\n"
-                f"Puntaje: {pregunta['puntaje']}\n"
-                f"Rúbrica: {rubrica_resumida(pregunta)}"
+                f"{pregunta['enunciado']} "
+                f"({pregunta['puntaje']} punto"
+                f"{'s' if pregunta['puntaje'] != 1 else ''}) "
+                f"(ID: {pregunta['id']})"
             )
 
             p = doc.add_paragraph()
