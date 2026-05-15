@@ -264,10 +264,7 @@ def generar_doc_examenes(asignaciones):
         # HOJA ADICIONAL
         # =====================================================
 
-        doc.add_page_break()
-        
-
-        extra.runs[0].bold = True
+        doc.add_page_break()     
 
         for _ in range(32):
             doc.add_paragraph("")
