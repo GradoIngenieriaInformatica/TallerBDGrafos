@@ -176,6 +176,8 @@ def rubrica_resumida(pregunta):
 # GENERAR DOCX EXÁMENES
 # =========================================================
 
+from docx.enum.section import WD_SECTION_START
+
 def generar_doc_examenes(asignaciones):
 
     doc = Document()
@@ -183,11 +185,14 @@ def generar_doc_examenes(asignaciones):
     for examen_idx, preguntas in enumerate(asignaciones):
 
         # =====================================================
-        # NUEVO EXAMEN
+        # NUEVA SECCIÓN (NO PAGE BREAK)
         # =====================================================
 
         if examen_idx > 0:
-            doc.add_page_break()
+
+            doc.add_section(
+                WD_SECTION_START.NEW_PAGE
+            )
 
         # =====================================================
         # TÍTULO
@@ -233,7 +238,7 @@ def generar_doc_examenes(asignaciones):
                 f"{pregunta['enunciado']} "
                 f"({pregunta['puntaje']} punto"
                 f"{'s' if pregunta['puntaje'] != 1 else ''}) "
-                f"(ID: {pregunta['id']})"
+                f"(id: {pregunta['id']})"
             )
 
             para = doc.add_paragraph()
@@ -243,28 +248,47 @@ def generar_doc_examenes(asignaciones):
             run.font.size = Pt(11)
 
             # =================================================
-            # ESPACIO RESPUESTA SEGÚN DIFICULTAD
+            # ESPACIO SEGÚN DIFICULTAD
             # =================================================
 
             nivel = pregunta["nivel"].lower()
 
             if nivel == "facil":
-                espacio = 6
+                espacio = 7
 
             elif nivel in ["medio", "intermedia"]:
-                espacio = 8
+                espacio = 9
 
             else:
-                espacio = 8
+                espacio = 11
 
             for _ in range(espacio):
                 doc.add_paragraph("")
 
         # =====================================================
-        # HOJA ADICIONAL
+        # AJUSTE MANUAL PARA LLEGAR A 5 PÁGINAS
         # =====================================================
 
-        doc.add_page_break()     
+        for _ in range(18):
+            doc.add_paragraph("")
+
+        # =====================================================
+        # SEXTA CARILLA = HOJA ADICIONAL
+        # =====================================================
+
+        doc.add_page_break()
+
+        extra = doc.add_paragraph()
+
+        r = extra.add_run(
+            "HOJA ADICIONAL\n"
+        )
+
+        r.bold = True
+        r.font.size = Pt(12)
+
+        for _ in range(36):
+            doc.add_paragraph("")
 
     # =========================================================
     # GUARDAR
@@ -272,7 +296,9 @@ def generar_doc_examenes(asignaciones):
 
     doc.save("examenes_presenciales.docx")
 
-    print("✅ DOCX generado: examenes_presenciales.docx")
+    print(
+        "✅ DOCX generado: examenes_presenciales.docx"
+    )
 
 # =========================================================
 # MAIN
