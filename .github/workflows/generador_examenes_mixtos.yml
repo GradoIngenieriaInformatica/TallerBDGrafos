@@ -39,4 +39,4 @@ jobs:
         with:
           name: examenes_presenciales
           path: |
-            examenes_presenciales.docx
+            *.docx

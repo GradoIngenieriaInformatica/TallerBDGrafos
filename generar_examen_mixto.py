@@ -169,115 +169,78 @@ def rubrica_resumida(pregunta):
     return ", ".join(criterios[:3])
 
 # =========================================================
-# DOC EXAMEN
-# =========================================================
-
-# =========================================================
 # GENERAR DOCX EXÁMENES
 # =========================================================
 
-from docx.shared import Pt
-
-def generar_doc_examenes(asignaciones):
+def generar_doc_examen(examen, examen_idx):
 
     doc = Document()
 
     style = doc.styles["Normal"]
-
     style.font.name = "Arial"
     style.font.size = Pt(11)
 
-    for examen_idx, preguntas in enumerate(asignaciones):
-
-        # =====================================================
-        # NUEVO EXAMEN
-        # =====================================================
-
-        if examen_idx > 0:
-            doc.add_page_break()
-
-        # =====================================================
-        # TÍTULO
-        # =====================================================
-
-        titulo = doc.add_heading(
-            "EXAMEN PRESENCIAL",
-            level=1
-        )
-
-        titulo.runs[0].bold = True
-
-        subtitulo = doc.add_paragraph(
-            "Bases de Datos — Grafos y Vectoriales"
-        )
-
-        # =====================================================
-        # DATOS ESTUDIANTE
-        # =====================================================
-
-        p = doc.add_paragraph()
-
-        r = p.add_run(
-            "\nNombre del estudiante:\n\n"
-            "________________________________________\n\n"
-            "Firma:\n\n"
-            "________________________________________\n"
-        )
-
-        r.bold = True
-        r.font.size = Pt(11)
-
-        # =====================================================
-        # PREGUNTAS
-        # =====================================================
-
-        for i, pregunta in enumerate(preguntas, start=1):
-
-            texto = (
-                f"{i}. "
-                f"{pregunta['enunciado']} "
-                f"({pregunta['puntaje']} punto"
-                f"{'s' if pregunta['puntaje'] != 1 else ''}) "
-                f"(id: {pregunta['id']})"
-            )
-
-            para = doc.add_paragraph()
-
-            run = para.add_run(texto)
-
-            run.font.size = Pt(11)
-            run.bold = False
-
-            # =================================================
-            # ESPACIO MANUSCRITO REAL
-            # =================================================
-
-            nivel = pregunta["nivel"].lower()
-
-            if nivel == "facil":
-
-                espacio = 10
-
-            elif nivel in ["medio", "intermedia"]:
-
-                espacio = 15
-
-            else:
-
-                espacio = 20
-
-            for _ in range(espacio):
-                doc.add_paragraph("")
-
-    # =========================================================
-    # GUARDAR
-    # =========================================================
-
-    doc.save("examenes_presenciales.docx")
-
-    print(
-        "✅ DOCX generado: examenes_presenciales.docx"
+    # =========================
+    # TÍTULO
+    # =========================
+    titulo = doc.add_heading(
+        f"EXAMEN PRESENCIAL {examen_idx + 1}",
+        level=1
     )
+    titulo.runs[0].bold = True
+
+    subtitulo = doc.add_paragraph(
+        "Bases de Datos — Grafos y Vectoriales"
+    )
+
+    # =========================
+    # DATOS ESTUDIANTE
+    # =========================
+    p = doc.add_paragraph()
+    r = p.add_run(
+        "\nNombre del estudiante:\n\n"
+        "________________________________________\n\n"
+        "Firma:\n\n"
+        "________________________________________\n"
+    )
+    r.bold = True
+    r.font.size = Pt(11)
+
+    # =========================
+    # PREGUNTAS
+    # =========================
+    for i, pregunta in enumerate(examen, start=1):
+
+        texto = (
+            f"{i}. {pregunta['enunciado']} "
+            f"({pregunta['puntaje']} punto"
+            f"{'s' if pregunta['puntaje'] != 1 else ''}) "
+            f"(id: {pregunta['id']})"
+        )
+
+        para = doc.add_paragraph()
+        run = para.add_run(texto)
+        run.font.size = Pt(11)
+
+        nivel = pregunta["nivel"].lower()
+
+        if nivel == "facil":
+            espacio = 10
+        elif nivel in ["medio", "intermedia"]:
+            espacio = 15
+        else:
+            espacio = 20
+
+        for _ in range(espacio):
+            doc.add_paragraph("")
+
+    # =========================
+    # GUARDAR ARCHIVO INDIVIDUAL
+    # =========================
+    filename = f"examen_{examen_idx + 1}.docx"
+    doc.save(filename)
+
+    print(f"✅ Generado: {filename}")
 
 # =========================================================
 # MAIN
@@ -334,7 +297,8 @@ def main():
             preguntas_finales
         )
 
-    generar_doc_examenes(examenes)
+    for idx, examen in enumerate(examenes):
+        generar_doc_examen(examen, idx)
 
     print("🎉 FIN")
 
