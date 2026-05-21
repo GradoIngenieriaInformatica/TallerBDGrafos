@@ -28,6 +28,10 @@ QUESTION_BANK_VECTORIAL = (
     os.environ.get("QUESTION_BANK_VECTORIAL") or ""
 ).strip()
 
+QUESTION_BANK_DOCUMENTAL = (
+    os.environ.get("QUESTION_BANK_DOCUMENTAL") or ""
+).strip()
+
 # =========================================================
 # CONFIG
 # =========================================================
@@ -141,10 +145,18 @@ def seleccionar_preguntas(
             cantidad
         )
 
+        # ==========================================
+        # PUNTAJE POR NIVEL
+        # ==========================================
+
         for p in elegidas:
 
             p["puntaje"] = (
                 config_banco["puntaje"][nivel]
+            )
+
+            p["origen"] = (
+                config_banco["nombre"]
             )
 
         seleccion.extend(elegidas)
@@ -176,68 +188,229 @@ def generar_doc_examen(examen, examen_idx):
 
     doc = Document()
 
+    # =====================================================
+    # ESTILO GENERAL
+    # =====================================================
+
     style = doc.styles["Normal"]
+
     style.font.name = "Arial"
     style.font.size = Pt(11)
 
-    # =========================
+    # =====================================================
     # TÍTULO
-    # =========================
+    # =====================================================
+
     titulo = doc.add_heading(
-        f"EXAMEN PRESENCIAL {examen_idx + 1}",
+        f"EXAMEN FINAL {examen_idx + 1}",
         level=1
     )
+
     titulo.runs[0].bold = True
 
     subtitulo = doc.add_paragraph(
-        "Bases de Datos — Grafos y Vectoriales"
+        "Bases de Datos — MongoDB Documental y Neo4j de Grafos"
     )
 
-    # =========================
+    subtitulo.runs[0].font.size = Pt(11)
+
+    # =====================================================
     # DATOS ESTUDIANTE
-    # =========================
+    # =====================================================
+
     p = doc.add_paragraph()
+
     r = p.add_run(
         "\nNombre del estudiante:\n\n"
         "________________________________________\n\n"
         "Firma:\n\n"
         "________________________________________\n"
     )
+
     r.bold = True
     r.font.size = Pt(11)
 
-    # =========================
+    # =====================================================
     # PREGUNTAS
-    # =========================
+    # =====================================================
+
     for i, pregunta in enumerate(examen, start=1):
 
+        # =================================================
+        # PREFIJO SEGÚN BANCO
+        # =================================================
+
+        if pregunta["origen"] == "documental":
+
+            prefijo = "documental"
+
+        elif pregunta["origen"] == "grafos":
+
+            prefijo = "grafos"
+
+        else:
+
+            prefijo = pregunta["origen"]
+
+        # =================================================
+        # ENUNCIADO
+        # =================================================
+
         texto = (
-            f"{i}. {pregunta['enunciado']} "
+            f"{i}. "
+            f"{prefijo}: "
+            f"{pregunta['enunciado']} "
             f"({pregunta['puntaje']} punto"
             f"{'s' if pregunta['puntaje'] != 1 else ''}) "
             f"(id: {pregunta['id']})"
         )
 
         para = doc.add_paragraph()
+
         run = para.add_run(texto)
+
+        run.bold = True
         run.font.size = Pt(11)
+
+        # =================================================
+        # QUERY BASE
+        # =================================================
+
+        query_base = pregunta.get(
+            "query_base",
+            ""
+        )
+
+        if query_base:
+
+            q = doc.add_paragraph()
+
+            qr = q.add_run(
+                "\nQuery inicial:\n"
+                f"{query_base}"
+            )
+
+            qr.font.name = "Courier New"
+            qr.font.size = Pt(9)
+
+        # =================================================
+        # CÓDIGO BASE
+        # =================================================
+
+        codigo_base = pregunta.get(
+            "codigo_base",
+            ""
+        )
+
+        if codigo_base:
+
+            c = doc.add_paragraph()
+
+            cr = c.add_run(
+                "\nCódigo base:\n"
+                f"{codigo_base}"
+            )
+
+            cr.font.name = "Courier New"
+            cr.font.size = Pt(9)
+
+        # =================================================
+        # DATASET
+        # =================================================
+
+        dataset = pregunta.get(
+            "dataset",
+            ""
+        )
+
+        if dataset:
+
+            d = doc.add_paragraph()
+
+            dr = d.add_run(
+                "\nDataset:\n"
+                f"{dataset}"
+            )
+
+            dr.font.name = "Courier New"
+            dr.font.size = Pt(9)
+
+        # =================================================
+        # RÚBRICA
+        # =================================================
+
+        criterios = (
+            pregunta
+            .get("respuesta", {})
+            .get("criterios", [])
+        )
+
+        # MongoDB usa respuesta.query
+        query_respuesta = (
+            pregunta
+            .get("respuesta", {})
+            .get("query")
+        )
+
+        if criterios:
+
+            rubrica = (
+                "Rúbrica: " +
+                ", ".join(criterios[:3])
+            )
+
+        elif query_respuesta:
+
+            rubrica = (
+                "Rúbrica: sintaxis correcta, "
+                "uso correcto de operadores "
+                "y resultado esperado"
+            )
+
+        else:
+
+            rubrica = (
+                "Rúbrica: correcta resolución"
+            )
+
+        r = doc.add_paragraph()
+
+        rr = r.add_run(rubrica)
+
+        rr.italic = True
+        rr.font.size = Pt(9)
+
+        # =================================================
+        # ESPACIO RESPUESTA
+        # =================================================
 
         nivel = pregunta["nivel"].lower()
 
         if nivel == "facil":
-            espacio = 10
-        elif nivel in ["medio", "intermedia"]:
-            espacio = 15
+
+            espacio = 8
+
+        elif nivel in [
+            "medio",
+            "intermedia"
+        ]:
+
+            espacio = 12
+
         else:
-            espacio = 20
+
+            espacio = 16
 
         for _ in range(espacio):
+
             doc.add_paragraph("")
 
-    # =========================
-    # GUARDAR ARCHIVO INDIVIDUAL
-    # =========================
+    # =====================================================
+    # GUARDAR ARCHIVO
+    # =====================================================
+
     filename = f"examen_{examen_idx + 1}.docx"
+
     doc.save(filename)
 
     print(f"✅ Generado: {filename}")
@@ -260,6 +433,11 @@ def main():
         "vectoriales"
     )
 
+    banco_documental = cargar_banco(
+        QUESTION_BANK_DOCUMENTAL,
+        "documental"
+    )
+
     total_examenes = contar_examenes()
 
     examenes = []
@@ -273,9 +451,22 @@ def main():
             nombre = config_banco["nombre"]
 
             if nombre == "grafos":
+
                 banco_actual = banco_grafos
-            else:
+
+            elif nombre == "vectoriales":
+
                 banco_actual = banco_vectoriales
+
+            elif nombre == "documental":
+
+                banco_actual = banco_documental
+
+            else:
+
+                raise Exception(
+                    f"Banco desconocido: {nombre}"
+                )
 
             seleccion = seleccionar_preguntas(
                 banco_actual,

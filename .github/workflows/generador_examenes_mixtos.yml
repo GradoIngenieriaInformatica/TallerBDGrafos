@@ -30,6 +30,8 @@ jobs:
 
           QUESTION_BANK_VECTORIAL: ${{ secrets.QUESTION_BANK_VECTORIAL }}
 
+          QUESTION_BANK_DOCUMENTAL: ${{ secrets.QUESTION_BANK_DOCUMENTAL }}
+
           CONFIG_JSON_MIXTO: ${{ secrets.CONFIG_JSON_MIXTO }}
 
           ALUMNOS_CSV: ${{ secrets.ALUMNOS_CSV }}
