@@ -314,15 +314,10 @@ def generar_doc_examen(examen, examen_idx):
     doc.add_page_break()
 
     # =====================================================
-    # TÍTULO PREGUNTAS
+    # INICIO PREGUNTAS
     # =====================================================
 
-    # preguntas_title = doc.add_heading(
-    #     f"EXAMEN {examen_idx + 1}",
-    #     level=1
-    # )
-
-    preguntas_title.runs[0].bold = True
+    doc.add_paragraph("")
 
     # =====================================================
     # PREGUNTAS
