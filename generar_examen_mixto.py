@@ -7,6 +7,7 @@ from docx import Document
 from docx.shared import Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.section import WD_SECTION
+from docx.enum.text import WD_BREAK
 
 # =========================================================
 # TOKENS
@@ -188,7 +189,7 @@ def rubrica_resumida(pregunta):
 
 def generar_doc_examen(examen, examen_idx):
 
-    doc = Document()
+    doc = Document("template_examen.docx")
 
     # =====================================================
     # ESTILO GENERAL
@@ -316,10 +317,10 @@ def generar_doc_examen(examen, examen_idx):
     # TÍTULO PREGUNTAS
     # =====================================================
 
-    preguntas_title = doc.add_heading(
-        f"EXAMEN {examen_idx + 1}",
-        level=1
-    )
+    # preguntas_title = doc.add_heading(
+    #     f"EXAMEN {examen_idx + 1}",
+    #     level=1
+    # )
 
     preguntas_title.runs[0].bold = True
 
