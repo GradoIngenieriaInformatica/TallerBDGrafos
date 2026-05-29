@@ -5,6 +5,8 @@ import requests
 
 from docx import Document
 from docx.shared import Pt
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.section import WD_SECTION
 
 # =========================================================
 # TOKENS
@@ -198,37 +200,128 @@ def generar_doc_examen(examen, examen_idx):
     style.font.size = Pt(11)
 
     # =====================================================
-    # TÍTULO
+    # HEADER GLOBAL
     # =====================================================
 
-    titulo = doc.add_heading(
-        f"EXAMEN FINAL {examen_idx + 1}",
-        level=1
+    section = doc.sections[0]
+
+    header = section.header
+
+    header_p = header.paragraphs[0]
+
+    header_p.text = (
+        "BASE DE DATOS II — "
+        "EXAMEN FINAL 2025-2026"
     )
 
-    titulo.runs[0].bold = True
+    header_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    subtitulo = doc.add_paragraph(
-        "Bases de Datos — MongoDB Documental y Neo4j de Grafos"
-    )
+    header_run = header_p.runs[0]
 
-    subtitulo.runs[0].font.size = Pt(11)
+    header_run.bold = True
+    header_run.font.size = Pt(9)
 
     # =====================================================
-    # DATOS ESTUDIANTE
+    # PORTADA
     # =====================================================
 
-    p = doc.add_paragraph()
+    titulo = doc.add_paragraph()
 
-    r = p.add_run(
-        "\nNombre del estudiante:\n\n"
-        "________________________________________\n\n"
-        "Firma:\n\n"
-        "________________________________________\n"
+    titulo.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    r = titulo.add_run(
+        "EXAMEN FINAL 2025 2026\n"
     )
 
     r.bold = True
-    r.font.size = Pt(11)
+    r.font.size = Pt(20)
+
+    subtitulo = titulo.add_run(
+        "\nCONVOCATORIA ORDINARIA\n"
+        "BASE DE DATOS II\n"
+    )
+
+    subtitulo.bold = True
+    subtitulo.font.size = Pt(14)
+
+    # =====================================================
+    # ESPACIO
+    # =====================================================
+
+    for _ in range(3):
+        doc.add_paragraph("")
+
+    # =====================================================
+    # DATOS ALUMNO
+    # =====================================================
+
+    datos = doc.add_paragraph()
+
+    datos_run = datos.add_run(
+        "DATOS DEL ALUMNO\n\n"
+        "Nombre y apellidos:\n\n"
+        "____________________________________\n\n"
+        "D.N.I.:\n\n"
+        "____________________________________\n\n"
+        "Grado:\n\n"
+        "____________________________________\n"
+    )
+
+    datos_run.bold = True
+    datos_run.font.size = Pt(11)
+
+    # =====================================================
+    # NORMATIVA
+    # =====================================================
+
+    doc.add_paragraph("")
+
+    norm_title = doc.add_paragraph()
+
+    nt = norm_title.add_run("NORMATIVA\n")
+
+    nt.bold = True
+    nt.font.size = Pt(12)
+
+    normativa = (
+        "NO se permite el uso de teléfono móvil o "
+        "cualquier otro aparato de comunicación "
+        "durante el desarrollo del examen.\n\n"
+
+        "Se debe entregar el examen con los datos "
+        "identificativos aunque no se haya "
+        "contestado ninguna pregunta.\n\n"
+
+        "Las respuestas deben desarrollarse "
+        "en las hojas del examen.\n\n"
+
+        "Antes de responder, lea atentamente "
+        "cada enunciado.\n\n"
+
+        "En caso de copia o intento de copia, "
+        "el examen será calificado con cero puntos."
+    )
+
+    norma = doc.add_paragraph(normativa)
+
+    norma.style = doc.styles["Normal"]
+
+    # =====================================================
+    # SALTO A PREGUNTAS
+    # =====================================================
+
+    doc.add_page_break()
+
+    # =====================================================
+    # TÍTULO PREGUNTAS
+    # =====================================================
+
+    preguntas_title = doc.add_heading(
+        f"EXAMEN {examen_idx + 1}",
+        level=1
+    )
+
+    preguntas_title.runs[0].bold = True
 
     # =====================================================
     # PREGUNTAS
@@ -237,7 +330,7 @@ def generar_doc_examen(examen, examen_idx):
     for i, pregunta in enumerate(examen, start=1):
 
         # =================================================
-        # PREFIJO SEGÚN BANCO
+        # PREFIJO
         # =================================================
 
         if pregunta["origen"] == "documental":
@@ -345,7 +438,6 @@ def generar_doc_examen(examen, examen_idx):
             .get("criterios", [])
         )
 
-        # MongoDB usa respuesta.query
         query_respuesta = (
             pregunta
             .get("respuesta", {})
@@ -406,7 +498,7 @@ def generar_doc_examen(examen, examen_idx):
             doc.add_paragraph("")
 
     # =====================================================
-    # GUARDAR ARCHIVO
+    # GUARDAR
     # =====================================================
 
     filename = f"examen_{examen_idx + 1}.docx"
