@@ -191,6 +191,8 @@ def generar_doc_examen(examen, examen_idx):
 
     doc = Document("template_examen.docx")
 
+    doc.add_page_break()
+
     # =====================================================
     # ESTILO GENERAL
     # =====================================================
