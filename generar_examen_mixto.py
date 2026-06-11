@@ -340,9 +340,10 @@ def generar_doc_examen(examen, examen_idx):
         elif query_respuesta:
 
             rubrica = (
-                "Rúbrica: sintaxis correcta, "
-                "uso correcto de operadores "
-                "y resultado esperado"
+                "Rúbrica:\n"
+                "• Lectura comprensiva y razonamiento correcto del enunciado (0.4 puntos) (  )\n"
+                "• Uso correcto de sintaxis, operadores, funciones y estructuras (0.4 puntos)  (  )\n"
+                "• Resultado correcto y coherente con lo solicitado (0.2 puntos) (  )"
             )
 
         else:
@@ -377,7 +378,7 @@ def generar_doc_examen(examen, examen_idx):
 
         else:
 
-            espacio = 16
+            espacio = 18
 
         for _ in range(espacio):
 
